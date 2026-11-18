@@ -126,16 +126,16 @@ for k = 1:m
 
         % (a) this row, moved into the world -- the same transform you
         %     will write again in TODO 1
-        % px = ...                  % <-- TODO 2a
-        % py = ...                  % <-- TODO 2b
+        px = x + (pr.pts(q, 1) * ct - pr.pts(q, 2) * sn);                % <-- TODO 2a
+        py = y + (pr.pts(q, 1) * sn + pr.pts(q, 2) * ct);                % <-- TODO 2b
 
         % (c) if the car does not fit there, this primitive is out.
         %     cc_pose_free(CM, px, py, theta) answers it. Remember that
         %     the heading of this row is th + pr.pts(q,3).
-        % if ~cc_pose_free(...)     % <-- TODO 2c
-        %     ok = false;
-        %     break
-        % end
+        if ~cc_pose_free(CM, px, py, th + pr.pts(q, 3))     % <-- TODO 2c
+             ok = false;
+             break
+         end
     end
 
     if ~ok
@@ -144,9 +144,12 @@ for k = 1:m
 
     % ---- TODO 1: where does this primitive put the car? ---------------
     % Three statements. Two of them need ct and sn; the third does not.
-    nx  = x;                        % <-- TODO 1a
-    ny  = y;                        % <-- TODO 1b
-    nth = th;                       % <-- TODO 1c
+    nx  = x+(pr.dx*ct - pr.dy*sn);                        % <-- TODO 1a
+    ny  = y+ (pr.dx *sn + pr.dy * ct);                       % <-- TODO 1b
+    nth = th + pr.dth;                       % <-- TODO 1c
+
+    %       x' = x*cos(th) - y*sin(th)
+    %       y' = x*sin(th) + y*cos(th)
 
     % ---- TODO 3: the node number and the cost -------------------------
     % cc_pose_index is given. Only the cost is missing, and CM.prim(k)
@@ -158,7 +161,7 @@ for k = 1:m
 
     kept          = kept + 1;
     nb(kept)      = idx;
-    w(kept)       = 0;              % <-- TODO 3
+    w(kept)       = pr.cost;              % <-- TODO 3
     poses(kept,:) = [nx, ny, nth];
 end
 
@@ -166,5 +169,5 @@ nb    = nb(1:kept);
 w     = w(1:kept);
 poses = poses(1:kept, :);
 
-error('task:todo', 'Complete tasks/car_neighbors.m -- see ANLEITUNGEN/08_vehicle_neighbors.md');
+%error('task:todo', 'Complete tasks/car_neighbors.m -- see ANLEITUNGEN/08_vehicle_neighbors.md');
 end

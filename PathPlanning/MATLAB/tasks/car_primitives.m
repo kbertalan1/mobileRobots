@@ -103,11 +103,11 @@ for k = 1:numel(P.steerLevels)
 
     % ---- TODO 1: the side slip angle ---------------------------------
     % One line. beta depends on d, P.lr and P.L.
-    beta = 0;                       % <-- TODO 1 goes here
+    beta = atan((P.lr / P.L) * tan(d));     % <-- TODO 1 goes here
 
     % ---- TODO 2: turning per metre driven ----------------------------
     % One line. dthdS depends on beta, d and P.L.
-    dthdS = 0;                      % <-- TODO 2 goes here      %#ok<NASGU>
+    dthdS = cos(beta) * tan(d) / P.L;   % <-- TODO 2 goes here      %#ok<NASGU>
 
     % ---- TODO 3: walk the arc in nSub steps --------------------------
     % The loop and the bookkeeping are here. Four statements are missing
@@ -119,14 +119,14 @@ for k = 1:numel(P.steerLevels)
     for q = 1:nSub
 
         % (a) the heading in the middle of this step
-        thMid = th;                 % <-- TODO 3a
+        thMid = th + (dthdS * ds) / 2;                 % <-- TODO 3a
 
         % (b) advance the heading to the end of this step
-        % th = ...                  % <-- TODO 3b
+        th = th + dthdS * ds;                  % <-- TODO 3b
 
         % (c) move ds in the direction the car is TRAVELLING
-        % x = ...                   % <-- TODO 3c
-        % y = ...                   % <-- TODO 3d
+        x = x + ds * cos(thMid + beta);                   % <-- TODO 3c
+        y = y + ds * sin(thMid + beta);                  % <-- TODO 3d
 
         pts(q,:) = [x, y, th];      % given: record the pose
     end
@@ -141,5 +141,5 @@ for k = 1:numel(P.steerLevels)
     prim(k).steps = nSub;                           %#ok<AGROW>
 end
 
-error('task:todo', 'Complete tasks/car_primitives.m -- see ANLEITUNGEN/08_vehicle_neighbors.md');
+%error('task:todo', 'Complete tasks/car_primitives.m -- see ANLEITUNGEN/08_vehicle_neighbors.md');
 end

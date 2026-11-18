@@ -73,3 +73,12 @@ searchTime = toc(searchClock);
 stats.preparationTime = preparationTime;
 stats.searchTime = searchTime;
 end
+
+
+%{
+[M, s, t] = maze_obstacles(50, 50, 0.35, 7);
+[p, c, st] = search_student_grid(M, s, t, 'bfs', 'Conn', 4);
+figure
+plot_grid(M, 'Expanded', st.order, 'Path', p, ...
+    'Start', s, 'Goal', t, 'Title', 'My BFS');
+%}

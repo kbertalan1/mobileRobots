@@ -13,8 +13,7 @@ function [path, cost, stats] = dfs_graph(W, s, t)
 %   Check:   check_my_code('dfs')
 %
 %   See also OPEN_NEW, GRAPH_NEIGHBORS, RECONSTRUCT_PATH.
-
-error('task:todo', 'Task 1 not started -- delete this line and begin.');
+%error('task:todo', 'Task 1 not started -- delete this line and begin.');
 
 n      = size(W, 1);
 par    = zeros(n, 1);     % par(v): which node did we come from to reach v
@@ -22,11 +21,18 @@ seen   = false(n, 1);     % already put into OPEN once?
 closed = false(n, 1);     % neighbours already looked at?
 order  = zeros(1, 0);     % which nodes came out, in order
 
+% OPEN - a stack storing node which are discovered but not pushed yet
+% seen - a node that has been pushed to the OPEN stack
+% closed - a node that has been already processed
+% par - stores the parent of each node 
+% order - stores the order of the expansion
+
+
 % TODO 2 -- Which container belongs to depth-first search?
 %           'lifo' = last in, first out
 %           'fifo' = first in, first out
 %           (Do TODO 1 first. The wrong one is deliberately here.)
-OPEN = open_new('fifo');
+OPEN = open_new('lifo');
 
 seen(s) = true;
 OPEN    = open_push(OPEN, s);
@@ -45,7 +51,7 @@ while ~open_isempty(OPEN)
     trace_step(numel(order), u);
 
     % TODO 3 -- When are we done? Replace false by the condition.
-    if false
+    if u == t
         break
     end
 
@@ -59,6 +65,8 @@ while ~open_isempty(OPEN)
         % TODO 1 -- Two lines are missing here:
         %             - remember that we reached v coming from u
         %             - put v into OPEN  (open_push)
+        par(v) = u;
+        OPEN   = open_push(OPEN, v);
         seen(v) = true;
     end
 end
@@ -67,3 +75,26 @@ end
 stats.expansions = numel(order);
 stats.order      = order;
 end
+
+
+
+%{
+  DEPTH-FIRST SEARCH (DFS) - CONCEPTUAL OVERVIEW
+
+  DFS explores a graph by diving as deep as possible along one 
+  continuous path before considering alternatives. Like navigating 
+  a physical maze, you pick a route and follow it until you hit the 
+  target or a dead end. If you get stuck, you backtrack to the last 
+  intersection and try the next available branch.
+
+  The algorithm relies on three main tools:
+  1. LIFO Stack (Last-In, First-Out): Prioritizes the most recently 
+     discovered paths, forcing the search deeper rather than wider.
+  2. Visited List: Marks explored nodes to prevent infinite loops.
+  3. Parent Array: Leaves "breadcrumbs" (remembering where we came from) 
+     to retrace the final successful route back to the start.
+
+  Because it only stores the current path and a few unexplored branches, 
+  DFS is highly memory-efficient—making it ideal for tracing complex 
+  PCB signal nets or evaluating deep paths in a microcontroller's state machine.
+%}
